@@ -1,0 +1,15 @@
+/* Estilos adicionales aquí si son necesarios */
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  img[src*="react.svg"] {
+    animation: logo-spin infinite 20s linear;
+  }
+}
