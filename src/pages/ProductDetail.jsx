@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { api, endpoints } from '../lib/api'
 import { useCartStore } from '../stores/cart'
 import { useAuthStore } from '../stores/auth'
+import { useUIStore } from '../stores/ui'
 
 export default function ProductDetail(){
   const { id } = useParams()
@@ -11,6 +12,7 @@ export default function ProductDetail(){
   const [comment,setComment] = useState('')
   const [loading,setLoading] = useState(true)
   const add = useCartStore(s=>s.add)
+  const pushToast = useUIStore(s=>s.pushToast)
   const { user } = useAuthStore()
 
   useEffect(()=>{
@@ -28,7 +30,10 @@ export default function ProductDetail(){
     if(!user?.validated) return alert('Tu cuenta está pendiente de validación por el administrador.')
     const {data} = await api.post(endpoints.comments(id), { content: comment })
     setComments((c)=>[...c,data]); setComment('')
+    pushToast({ title: 'Comentario enviado', message: '¡Gracias por tu opinión! 🧡' })
   }
+
+  const addToCart = ()=>{ add(p); pushToast({ title:'Agregado al carrito', message:p.name }) }
 
   if(loading) return <div className="card p-6"><div className="skeleton h-64 w-full"/><div className="mt-4 skeleton h-6 w-1/2"/><div className="mt-2 skeleton h-4 w-full"/></div>
   if(!p) return <p className="text-neutral-700">Producto no encontrado.</p>
@@ -45,7 +50,7 @@ export default function ProductDetail(){
           <p className="text-neutral-700 leading-relaxed">{p.description}</p>
           <p className="price text-2xl">${p.price}</p>
           <div className="flex gap-3 pt-2">
-            <button onClick={()=>add(p)} className="btn btn-primary">Agregar al carrito</button>
+            <button onClick={addToCart} className="btn btn-primary">Agregar al carrito</button>
             <a href="#comentarios" className="btn btn-ghost">Ver comentarios</a>
           </div>
           {!user?.validated && (

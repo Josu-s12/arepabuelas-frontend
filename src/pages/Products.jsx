@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { api, endpoints } from '../lib/api'
 import { useCartStore } from '../stores/cart'
+import { useUIStore } from '../stores/ui'
 import { Link } from 'react-router-dom'
 
 function inferCategory(p){
@@ -38,6 +39,9 @@ export default function Products(){
   const [q,setQ] = useState('')
   const [chip,setChip] = useState('todas')
   const add = useCartStore(s=>s.add)
+  const pushToast = useUIStore(s=>s.pushToast)
+
+  const handleAdd = (p)=>{ add(p); pushToast({ title:'Agregado al carrito', message:p.name }) }
 
   useEffect(()=>{
     (async()=>{
@@ -100,7 +104,7 @@ export default function Products(){
       {/* GRID */}
       {filtered.length ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-          {filtered.map(p=> <ProductCard key={p.id} p={p} onAdd={add} />)}
+          {filtered.map(p=> <ProductCard key={p.id} p={p} onAdd={handleAdd} />)}
         </div>
       ) : (
         <div className="card p-6 text-center">
